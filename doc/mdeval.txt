@@ -1,0 +1,119 @@
+*mdeval.txt*
+
+CONTENTS                                     *mdeval-contents*
+
+Introduction                                 |mdeval-introduction|
+Installation                                 |mdeval-installation|
+Usage                                        |mdeval-usage|
+Configuration                                |mdeval-configuration|
+
+Note: Type |gO| to show the outline of contents.
+
+==============================================================================
+ITRODUCTION                                               *mdeval-introduction*
+
+This plugin is inspired by org-mode's evaluating code blocks feature and tries
+to implement its basic functionality inside Neovim.
+
+==============================================================================
+I TALLATION                                               *mdeval-installation*
+
+------------------------------------------------------------------------------
+
+Via Plugin Manager~
+
+    Take [vim-plug](https://github.com/junegunn/vim-plug) for example:
+>
+        Plug 'sainnhe/mdeval'
+<
+    You should also enable syntax highlighting inside code blocks in markdown
+    using the built-in functionality. Please define a list of markdown fenced
+    languages in your configuration file:
+>
+        let g:markdown_fenced_languages = ['python', 'cpp']
+<
+
+==============================================================================
+USAGE                                                            *mdeval-usage*
+
+------------------------------------------------------------------------------
+
+To use this plugin, you should move cursor inside a fenced code block with
+language identifier and execute the `:MdEval` command. mdeval.nvim will
+capture the results of the code block execution and inserts them in the
+markdown file, right after the code block.
+
+==============================================================================
+CONFIGURATION                                            *mdeval-configuration*
+
+You can configure *mdeval.nvim* by running `mdeval.setup` function.
+
+Here is a complete list of the available configuration options.
+
+------------------------------------------------------------------------------
+                                                         *require_confirmation*
+require_confirmation~
+
+If set to `true`, the plugin will ask for confirmation each time before
+evaluating the code block.
+
+    Available values: `false`, `true`
+    Default value: `true`
+
+------------------------------------------------------------------------------
+                                                           *allowed_file_types*
+allowed_file_types~
+
+A list of language codes, for which this plugin will not ask for the
+confirmation before evaluation.
+
+    Default value: `{}`
+
+E.g.
+>
+    allowed_file_types={'python', 'cpp'}
+<
+------------------------------------------------------------------------------
+                                                                *tmp_build_dir*
+tmp_build_dir~
+
+The path to the directory that will be used to store temporary source files
+and compiled artifacts.
+
+    Default value: `/tmp/mdeval/`
+
+------------------------------------------------------------------------------
+                                                                *results_label*
+results_label~
+
+The string inserted before the code evaluation output.
+
+    Default value: `*Results:*`
+
+------------------------------------------------------------------------------
+                                                                 *eval_options*
+eval_options~
+
+Evaluation options for the code blocks for different languages.
+
+Example configuration:
+>
+  eval_options = {
+    -- Set custom configuration for C++
+    cpp = {
+      command = {"clang++", "-std=c++20", "-O0"},
+    },
+    -- Add new configuration for Crystal
+    crystal = {
+      command = {"crystal"},        -- Command to run interpreter
+      language_code = "crystal",    -- Markdown language code
+      exec_type = "interpreted",    -- compiled or interpreted
+      extension = "cr",             -- File extension for temporary files
+    },
+  }
+<
+------------------------------------------------------------------------------
+
+==============================================================================
+vim:tw=78:nosta:noet:ts=8:sts=0:ft=help:et:sw=4:fen:fdm=marker:fmr={{{,}}}:
+

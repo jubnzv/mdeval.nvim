@@ -1,0 +1,71 @@
+local M = {}
+
+M.require_confirmation = true
+M.allowed_file_types = {}
+M.tmp_build_dir = "/tmp/mdeval/"
+M.results_label = "*Results:*"
+M.eval_options = {
+    bash = {
+        command = {"bash"},
+        language_code = {"bash", "sh"},
+        exec_type = "interpreted",
+        extension = "sh",
+    },
+    c = {
+        command = {"clang"},
+        language_code = "c",
+        exec_type = "compiled",
+        extension = "c",
+    },
+    cpp = {
+        command = {"clang++"},
+        language_code = "cpp",
+        exec_type = "compiled",
+        extension = "cpp",
+    },
+    lua = {
+        command = {"lua"},
+        language_code = "lua",
+        exec_type = "interpreted",
+        extension = "lua",
+    },
+    haskell = {
+        command = {"ghc"},
+        language_code = "haskell",
+        exec_type = "compiled",
+        extension = "hs",
+    },
+    js = {
+        command = {"node"},
+        language_code = "js",
+        exec_type = "interpreted",
+        extension = "js",
+    },
+    ocaml = {
+        command = {"ocamlc"},
+        language_code = "ocaml",
+        exec_type = "compiled",
+        extension = "ml",
+    },
+    python = {
+        command = {"python3"},
+        language_code = {"python", "py"},
+        exec_type = "interpreted",
+        extension = "py",
+    },
+    ruby = {
+        command = {"ruby"},
+        language_code = "ruby",
+        exec_type = "interpreted",
+        extension = "rb",
+    },
+    rust = {
+        command = {"rustc"},
+        language_code = "rust",
+        exec_type = "compiled",
+        extension = "rs",
+    },
+}
+
+return M
+
