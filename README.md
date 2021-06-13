@@ -10,7 +10,7 @@ It attempts to implement the basic functionality of org-mode's [evaluating code 
 
 ## Installation
 
-This plugin requires neovim version 0.5+.
+This plugin requires Neovim version 0.5+.
 
 Install it with plugin manager:
 
@@ -18,7 +18,7 @@ Install it with plugin manager:
 Plug 'jubnzv/mdeval.nvim'
 ```
 
-And add the following line in your `init.lua`:
+Add the following line in your `init.lua`:
 
 ```lua
 require 'mdeval'.setup()
@@ -27,8 +27,8 @@ require 'mdeval'.setup()
 You should also enable syntax highlighting inside code blocks in markdown using the built-in functionality.
 Please define a list of markdown fenced languages in your configuration file:
 
-```
-let g:markdown_fenced_languages = ['python', 'cpp']
+```lua
+vim.g.markdown_fenced_languages = {'python', 'cpp'}
 ```
 
 ## Usage
@@ -65,5 +65,13 @@ require 'mdeval'.setup({
 
 By default, the plugin will ask your confirmation before evaluating code. This makes sense, because code evaluation is potentially harm operation.
 You can disable this feature setting `require_confirmation` option to `false`, or allow to execute code blocks without confirmation only for some languages, using `allowed_file_types` option, for example: `allowed_file_types={'rust', 'haskell'}`.
+
+Probably, it will be a good idea to define keybindings to call `:MdEval`. This plugin doesn't add default keybindings, but you can do this in your configuration file, for example:
+
+```lua
+vim.api.nvim_set_keymap('n', '<leader>c',
+                        "<cmd>lua require 'mdeval'.eval_code_block()<CR>",
+                        {silent = true, noremap = true})
+```
 
 See the complete list of options in the [documentation](./doc/mdeval.txt).
