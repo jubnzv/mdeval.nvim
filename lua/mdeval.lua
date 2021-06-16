@@ -22,7 +22,18 @@ local function sanitize_output(temp_filename, out)
     return out
 end
 
-local function run_compiler(command, extension, temp_filename, code)
+-- Wraps command inside "timeout"
+local function get_timeout_command(cmd, timeout)
+    if vim.loop.os_uname().sysname == 'Darwin' then
+        timeout_cmd = 'gtimeout'
+    else
+        timeout_cmd = 'timeout'
+    end
+    return string.format("%s %d sh -c '%s' 2>&1",
+                         timeout_cmd, timeout, cmd)
+end
+
+local function run_compiler(command, extension, temp_filename, code, timeout)
     assert(command ~= nil)
     local filepath = string.format("%s/%s", M.opts.tmp_build_dir, temp_filename)
     local src_filepath = string.format("%s.%s", filepath, extension)
@@ -54,7 +65,11 @@ local function run_compiler(command, extension, temp_filename, code)
         return result, false
     end
 
-    handle = io.popen(string.format("%s 2>&1", a_out_filepath))
+    if timeout ~= -1 then
+        handle = io.popen(get_timeout_command(a_out_filepath, timeout))
+    else
+        handle = io.popen(string.format("%s 2>&1", a_out_filepath))
+    end
     result = {}
     for line in handle:lines() do
         result[#result+1] = line
@@ -64,7 +79,7 @@ local function run_compiler(command, extension, temp_filename, code)
     return result, true
 end
 
-local function run_interpreter(command, extension, temp_filename, code)
+local function run_interpreter(command, extension, temp_filename, code, timeout)
     assert(command ~= nil)
     local filepath = string.format("%s/%s", M.opts.tmp_build_dir, temp_filename)
     local src_filepath = string.format("%s.%s", filepath, extension)
@@ -73,9 +88,12 @@ local function run_interpreter(command, extension, temp_filename, code)
     f:write(code)
     f:close()
 
-    local handle = io.popen(string.format("%s %s 2>&1",
-                                          table.concat(command, " "),
-                                          src_filepath))
+    local cmd = string.format("%s %s", table.concat(command, " "), src_filepath)
+    if timeout ~= -1 then
+        local handle = io.popen(get_timeout_command(cmd, timeout))
+    else
+        local handle = io.popen(string.format("%s 2>&1", cmd))
+    end
     local result = {}
     local lastline
     for line in handle:lines() do
@@ -116,19 +134,21 @@ local function find_lang_options(lang_code)
     return lang_name, lang_options
 end
 
-local function eval_code(lang_name, lang_options, temp_filename, code)
+local function eval_code(lang_name, lang_options, temp_filename, code, timeout)
     create_tmp_build_dir()
 
     if lang_options.exec_type == "compiled" then
         return run_compiler(lang_options.command,
                             lang_options.extension,
                             temp_filename,
-                            code)
+                            code,
+                            timeout)
     elseif lang_options.exec_type == "interpreted" then
         return run_interpreter(lang_options.command,
                                lang_options.extension,
                                temp_filename,
-                               code)
+                               code,
+                               timeout)
     end
 
     if lang.exec_type == nil then
@@ -280,7 +300,8 @@ function M:eval_code_block()
                                                  linenr_until)
     local code_str = table.concat(code, "\n")
     local eval_output, rc = eval_code(lang_name, lang_options,
-                                      temp_filename, code_str)
+                                      temp_filename, code_str,
+                                      M.opts.exec_timeout)
     remove_previous_output(linenr_until + 1)
     write_output(linenr_until, eval_output)
 end

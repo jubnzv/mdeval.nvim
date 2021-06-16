@@ -83,6 +83,15 @@ and compiled artifacts.
     Default value: `/tmp/mdeval/`
 
 ------------------------------------------------------------------------------
+                                                                 *exec_timeout*
+exec_timeout~
+
+Timeout for execution of the code block in seconds. If set -1, the timeout
+will be disabled.
+
+    Default value: `*-1*`
+
+------------------------------------------------------------------------------
                                                                 *results_label*
 results_label~
 

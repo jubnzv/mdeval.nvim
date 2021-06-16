@@ -31,6 +31,12 @@ Please define a list of markdown fenced languages in your configuration file:
 vim.g.markdown_fenced_languages = {'python', 'cpp'}
 ```
 
+MacOS users also should make sure that they has `coreutils` package installed:
+
+```bash
+brew install coreutils
+```
+
 ## Usage
 
 To use this plugin, you should move cursor inside a fenced code block with language identifier and execute the `:MdEval` command.

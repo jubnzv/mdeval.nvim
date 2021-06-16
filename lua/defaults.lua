@@ -2,6 +2,7 @@ local M = {}
 
 M.require_confirmation = true
 M.allowed_file_types = {}
+M.exec_timeout = -1
 M.tmp_build_dir = "/tmp/mdeval/"
 M.results_label = "*Results:*"
 M.eval_options = {
