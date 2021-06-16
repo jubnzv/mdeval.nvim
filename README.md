@@ -31,7 +31,7 @@ Please define a list of markdown fenced languages in your configuration file:
 vim.g.markdown_fenced_languages = {'python', 'cpp'}
 ```
 
-MacOS users also should make sure that they has `coreutils` package installed:
+MacOS users also should make sure that they have `coreutils` package installed:
 
 ```bash
 brew install coreutils
