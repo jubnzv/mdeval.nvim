@@ -89,10 +89,11 @@ local function run_interpreter(command, extension, temp_filename, code, timeout)
     f:close()
 
     local cmd = string.format("%s %s", table.concat(command, " "), src_filepath)
+    local handle
     if timeout ~= -1 then
-        local handle = io.popen(get_timeout_command(cmd, timeout))
+        handle = io.popen(get_timeout_command(cmd, timeout))
     else
-        local handle = io.popen(string.format("%s 2>&1", cmd))
+        handle = io.popen(string.format("%s 2>&1", cmd))
     end
     local result = {}
     local lastline
