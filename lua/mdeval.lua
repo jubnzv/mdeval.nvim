@@ -101,13 +101,6 @@ local function run_interpreter(command, extension, temp_filename, code, timeout)
         result[#result+1] = line
         lastline = line
     end
-    if #result > 0 then
-        table.remove(result, #result)
-    end
-    if tonumber(lastline) ~= 0 then
-        result = sanitize_output(filepath, result)
-        return result, false
-    end
 
     return result, true
 end
