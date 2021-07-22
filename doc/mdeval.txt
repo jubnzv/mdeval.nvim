@@ -112,12 +112,12 @@ Example configuration:
     cpp = {
       command = {"clang++", "-std=c++20", "-O0"},
     },
-    -- Add new configuration for Crystal
-    crystal = {
-      command = {"crystal"},        -- Command to run interpreter
-      language_code = "crystal",    -- Markdown language code
-      exec_type = "interpreted",    -- compiled or interpreted
-      extension = "cr",             -- File extension for temporary files
+    -- Add new configuration for Racket
+    racket = {
+      command = {"racket"},        -- Command to run interpreter
+      language_code = "racket",    -- Markdown language code
+      exec_type = "interpreted",   -- compiled or interpreted
+      extension = "rkt",           -- File extension for temporary files
     },
   }
 <
