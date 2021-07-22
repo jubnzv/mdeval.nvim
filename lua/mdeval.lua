@@ -131,6 +131,11 @@ end
 local function eval_code(lang_name, lang_options, temp_filename, code, timeout)
     create_tmp_build_dir()
 
+    -- Prepend generated code with the default_header.
+    if lang_options.default_header then
+      code = lang_options.default_header .. "\n" .. code
+    end
+
     if lang_options.exec_type == "compiled" then
         return run_compiler(lang_options.command,
                             lang_options.extension,
