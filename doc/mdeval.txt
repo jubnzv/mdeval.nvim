@@ -10,13 +10,13 @@ Configuration                                |mdeval-configuration|
 Note: Type |gO| to show the outline of contents.
 
 ==============================================================================
-ITRODUCTION                                               *mdeval-introduction*
+INTRODUCTION                                              *mdeval-introduction*
 
 This plugin is inspired by org-mode's evaluating code blocks feature and tries
 to implement its basic functionality inside Neovim.
 
 ==============================================================================
-I TALLATION                                               *mdeval-installation*
+INSTALLATION                                              *mdeval-installation*
 
 ------------------------------------------------------------------------------
 
