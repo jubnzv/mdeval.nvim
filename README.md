@@ -10,15 +10,11 @@ It attempts to implement the basic functionality of org-mode's [evaluating code 
 
 ## Installation
 
-This plugin requires Neovim version 0.5+.
+This plugin requires Neovim version 0.5+. It works on Linux, MacOS and Windows (through WSL).
 
-Install it with plugin manager:
+Install it with your plugin manager.
 
-```
-Plug 'jubnzv/mdeval.nvim'
-```
-
-Add the following line in your `init.lua`:
+Then add the following line in your `init.lua`:
 
 ```lua
 require 'mdeval'.setup()
@@ -36,6 +32,8 @@ MacOS users also should make sure that they have `coreutils` package installed:
 ```bash
 brew install coreutils
 ```
+
+And Windows users should have [installed WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) with compilers/interpreters they want use.
 
 ## Usage
 
@@ -57,6 +55,11 @@ require 'mdeval'.setup({
     -- Set custom configuration for C++
     cpp = {
       command = {"clang++", "-std=c++20", "-O0"},
+      default_header = [[
+    #include <iostream>
+    #include <vector>
+    using namespace std;
+      ]]
     },
     -- Add new configuration for Racket
     racket = {
