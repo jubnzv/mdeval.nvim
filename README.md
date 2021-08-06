@@ -8,9 +8,20 @@ It attempts to implement the basic functionality of org-mode's [evaluating code 
 
 ![](./demo.gif)
 
-## Installation
+## Requirements
+This plugin requires Neovim version 0.5+.
 
-This plugin requires Neovim version 0.5+. It works on Linux, MacOS and Windows (through WSL).
+It works on Linux, MacOS and Windows (through WSL).
+
+MacOS users should make sure that they have `coreutils` package installed:
+
+```bash
+brew install coreutils
+```
+
+Windows users should have [installed WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) with compilers/interpreters they want use.
+
+## Installation
 
 Install it with your plugin manager.
 
@@ -20,20 +31,11 @@ Then add the following line in your `init.lua`:
 require 'mdeval'.setup()
 ```
 
-You should also enable syntax highlighting inside code blocks in markdown using the built-in functionality.
-Please define a list of markdown fenced languages in your configuration file:
+You should also enable syntax highlighting inside code blocks for your languages using the built-in functionality:
 
 ```lua
 vim.g.markdown_fenced_languages = {'python', 'cpp'}
 ```
-
-MacOS users also should make sure that they have `coreutils` package installed:
-
-```bash
-brew install coreutils
-```
-
-And Windows users should have [installed WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) with compilers/interpreters they want use.
 
 ## Usage
 
