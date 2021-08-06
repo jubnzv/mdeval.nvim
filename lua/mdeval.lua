@@ -6,8 +6,16 @@ local fn = vim.fn
 
 local M = {}
 
+-- A wrapper to execute commands throught WSL on Windows.
+local function get_command(cmd)
+  if vim.loop.os_uname().version:match "Windows" then
+    return string.format("wsl %s", prefix, cmd)
+  end
+  return cmd
+end
+
 local function create_tmp_build_dir()
-    local handle = io.popen(string.format("mkdir -p %s 2>&1", M.opts.tmp_build_dir))
+    local handle = io.popen(get_command(string.format("mkdir -p %s 2>&1", M.opts.tmp_build_dir)))
     handle:close()
 end
 
@@ -22,15 +30,15 @@ local function sanitize_output(temp_filename, out)
     return out
 end
 
--- Wraps command inside "timeout"
+-- Wraps command inside the "timeout" call.
 local function get_timeout_command(cmd, timeout)
     if vim.loop.os_uname().sysname == 'Darwin' then
         timeout_cmd = 'gtimeout'
     else
         timeout_cmd = 'timeout'
     end
-    return string.format("%s %d sh -c '%s' 2>&1",
-                         timeout_cmd, timeout, cmd)
+    return get_command(string.format("%s %d sh -c '%s' 2>&1",
+                                     timeout_cmd, timeout, cmd))
 end
 
 local function run_compiler(command, extension, temp_filename, code, timeout)
@@ -44,13 +52,14 @@ local function run_compiler(command, extension, temp_filename, code, timeout)
     f:close()
 
     -- Remove temp files left over from the previous compilation.
-    local handle = io.popen(string.format("rm -f %s 2>&1", a_out_filepath))
+    local handle = io.popen(get_command(string.format("rm -f %s 2>&1",
+                                                      a_out_filepath)))
     handle:close()
 
-    local handle = io.popen(string.format("%s %s -o %s 2>&1; echo $?",
-                                          table.concat(command, " "),
-                                          src_filepath,
-                                          a_out_filepath))
+    local handle = io.popen(get_command(string.format("%s %s -o %s 2>&1; echo $?",
+                                                      table.concat(command, " "),
+                                                      src_filepath,
+                                                      a_out_filepath)))
     local result = {}
     local lastline
     for line in handle:lines() do
@@ -68,7 +77,7 @@ local function run_compiler(command, extension, temp_filename, code, timeout)
     if timeout ~= -1 then
         handle = io.popen(get_timeout_command(a_out_filepath, timeout))
     else
-        handle = io.popen(string.format("%s 2>&1", a_out_filepath))
+        handle = io.popen(get_command(string.format("%s 2>&1", a_out_filepath)))
     end
     result = {}
     for line in handle:lines() do
@@ -93,7 +102,7 @@ local function run_interpreter(command, extension, temp_filename, code, timeout)
     if timeout ~= -1 then
         handle = io.popen(get_timeout_command(cmd, timeout))
     else
-        handle = io.popen(string.format("%s 2>&1", cmd))
+        handle = io.popen(get_command(string.format("%s 2>&1", cmd)))
     end
     local result = {}
     local lastline
