@@ -86,3 +86,7 @@ vim.api.nvim_set_keymap('n', '<leader>c',
 ```
 
 See the complete list of options in the [documentation](./doc/mdeval.txt).
+
+## See also
+
+* [Sniprun](https://github.com/michaelb/sniprun) – A similar plugin written in Rust with much more features.
