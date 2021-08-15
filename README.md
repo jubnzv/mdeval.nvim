@@ -1,6 +1,6 @@
 # mdeval.nvim
 
-This plugin allows you evaluate code blocks inside markdown documents.
+This plugin allows you evaluate code blocks inside markdown,vimwiki and norg documents.
 
 It attempts to implement the basic functionality of org-mode's [evaluating code blocks](https://orgmode.org/manual/Evaluating-Code-Blocks.html#Evaluating-Code-Blocks) feature inside Neovim.
 
