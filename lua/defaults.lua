@@ -1,4 +1,11 @@
 local M = {}
+local lang_conf = {}
+
+lang_conf["markdown"] = {"```", "```"}
+lang_conf["vimwiki"] = {"{{{", "}}}"}
+lang_conf["norg"] = {"@code", "@end"}
+
+M.lang_conf = lang_conf
 
 M.require_confirmation = true
 M.allowed_file_types = {}

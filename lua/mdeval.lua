@@ -6,6 +6,15 @@ local fn = vim.fn
 
 local M = {}
 
+local function code_block_start()
+    return defaults.lang_conf[vim.bo.filetype][1]
+end
+
+local function code_block_end()
+    return defaults.lang_conf[vim.bo.filetype][2]
+end
+
+
 -- A wrapper to execute commands throught WSL on Windows.
 local function get_command(cmd)
   if vim.loop.os_uname().version:match "Windows" then
@@ -197,7 +206,7 @@ local function remove_previous_output(linenr)
 
     -- Remove multiline code blocks following the results header.
     local cur_line = fn.getline(linenr)
-    if cur_line:find('```') then
+    if cur_line:find(code_block_start()) then
         end_linenr = linenr
         while true do
             end_linenr = end_linenr + 1
@@ -205,7 +214,7 @@ local function remove_previous_output(linenr)
             if cur_line == nil then
                 break
             end
-            if cur_line == '```' then
+            if cur_line == code_block_end() then
                 break
             end
         end
@@ -238,11 +247,11 @@ local function write_output(linenr, out)
                                                     out[1])
         else
             out_table[#out_table+1] = M.opts.results_label
-            out_table[#out_table+1] = "```"
+            out_table[#out_table+1] = code_block_start()
             for _, s in pairs(out) do
                 out_table[#out_table+1] = s:gsub('\\n', '')
             end
-            out_table[#out_table+1] = "```"
+            out_table[#out_table+1] = code_block_end()
         end
     end
 
@@ -258,15 +267,15 @@ local function write_output(linenr, out)
 end
 
 function M:eval_code_block()
-	local linenr_from = fn.search("^```.\\+$", "bnW")
-	local linenr_until = fn.search("^```.*$", "nW")
+	local linenr_from = fn.search("^"..code_block_start()..".\\+$", "bnW")
+	local linenr_until = fn.search("^"..code_block_end()..".*$", "nW")
     if linenr_from == 0 or linenr_until == 0 then
         print("Not inside a code block.")
         return
     end
 
     local start_line = fn.getline(linenr_from)
-    local lang_code = string.sub(start_line, 4)
+    local lang_code = string.sub(start_line, string.len(code_block_start())+1):gsub("%s+", "")
     if lang_code == "" then
         print("Language is not defined.")
         return
@@ -315,8 +324,8 @@ function M:eval_code_block()
 end
 
 function M:eval_clean_results()
-	local linenr_from = fn.search("^```.\\+$", "bnW")
-	local linenr_until = fn.search("^```.*$", "nW")
+	local linenr_from = fn.search("^"..code_block_start()..".\\+$", "bnW")
+	local linenr_until = fn.search("^"..code_block_end()..".*$", "nW")
     if linenr_from == 0 or linenr_until == 0 then
         print("Not inside a code block.")
         return
