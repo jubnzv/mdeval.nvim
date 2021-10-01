@@ -5,6 +5,7 @@ lang_conf["markdown"] = {"```", "```"}
 lang_conf["vimwiki"] = {"{{{", "}}}"}
 lang_conf["norg"] = {"@code", "@end"}
 lang_conf["org"] = {"#+BEGIN_SRC", "#+END_SRC"}
+lang_conf["markdown.pandoc"] = {"```", "```"}
 
 M.lang_conf = lang_conf
 
