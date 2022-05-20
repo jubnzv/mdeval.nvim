@@ -266,16 +266,24 @@ local function write_output(linenr, out)
     end
 end
 
+-- Parses start line to get code of the language.
+-- For example: `#+BEGIN_SRC cpp` returns `cpp`.
+function get_lang(start_line)
+    local start_pos = string.find(start_line, code_block_start())
+    local len = string.len(code_block_start())
+    return string.sub(start_line, start_pos + len):gsub("%s+", "")
+end
+
 function M:eval_code_block()
-	local linenr_from = fn.search("^"..code_block_start()..".\\+$", "bnW")
-	local linenr_until = fn.search("^"..code_block_end()..".*$", "nW")
+	local linenr_from = fn.search(code_block_start()..".\\+$", "bnW")
+	local linenr_until = fn.search(code_block_end()..".*$", "nW")
     if linenr_from == 0 or linenr_until == 0 then
         print("Not inside a code block.")
         return
     end
 
     local start_line = fn.getline(linenr_from)
-    local lang_code = string.sub(start_line, string.len(code_block_start())+1):gsub("%s+", "")
+    local lang_code = get_lang(start_line)
     if lang_code == "" then
         print("Language is not defined.")
         return
@@ -289,7 +297,7 @@ function M:eval_code_block()
 
     local lang_name, lang_options = find_lang_options(lang_code)
     if lang_name == nil or lang_options == nil then
-        error(string.format("Unsupported language: %s", lang_code))
+        print(string.format("Unsupported language: %s", lang_code))
         return
     end
 
@@ -324,8 +332,8 @@ function M:eval_code_block()
 end
 
 function M:eval_clean_results()
-	local linenr_from = fn.search("^"..code_block_start()..".\\+$", "bnW")
-	local linenr_until = fn.search("^"..code_block_end()..".*$", "nW")
+	local linenr_from = fn.search(code_block_start()..".\\+$", "bnW")
+	local linenr_until = fn.search(code_block_end()..".*$", "nW")
     if linenr_from == 0 or linenr_until == 0 then
         print("Not inside a code block.")
         return
