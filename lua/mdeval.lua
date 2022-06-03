@@ -256,7 +256,7 @@ local function write_output(linenr, out)
     end
 
     -- Add an additional new line after the end, if it doesn't already exist.
-    if fn.getline(linenr + #out_table+1) ~= "" then
+    if fn.getline(linenr + 1) ~= "" then
         out_table[#out_table+1] = ""
     end
 
