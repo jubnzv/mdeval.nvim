@@ -274,6 +274,79 @@ function get_lang(start_line)
     return string.sub(start_line, start_pos + len):gsub("%s+", "")
 end
 
+-- Returns indentation length for the string `s`.
+local function get_indent_lenght(s)
+  tab_length = 4
+  indent = 0
+  for i = 1, #s do
+    c = s:sub(i, i)
+    if c == ' ' then
+      indent = indent + 1
+    else
+      if c == '\t' then
+        indent = indent + tab_length
+      else
+        break
+      end
+    end
+  end
+  if indent == 0 then
+    return 0
+  else
+    return indent + 1
+  end
+end
+
+-- Parses source code of the block between `start_` and `end_l` line numbers in
+-- the current buffer.
+local function parse_code(start_l, end_l)
+  local code = api.nvim_buf_get_lines(0, start_l, end_l, false)
+  if code == nil then
+    return ''
+  end
+  code = table.concat(code, "\n")
+  -- Remove extra indent before the source code.
+  -- This is important for space sensitive languages like Python and Haskell.
+  local first_line_indent = 0
+  local has_indent = false
+  local lines = {}
+  local rest_code = code
+  while true do
+      -- Get the current line
+      if rest_code == nil then
+        break
+      end
+      is, ie = string.find(rest_code, "\n")
+      if is == nil then
+        s = rest_code
+      else
+        s, _ = rest_code:sub(1, ie-1)
+      end
+      if #s + 2 < #rest_code then
+        rest_code, _ = rest_code:sub(#s+2, #rest_code)
+      else
+        rest_code = nil
+      end
+
+      if not has_indent then
+        -- Find the indent at the first line
+        first_line_indent = get_indent_lenght(s)
+        if first_line_indent == 0 then
+          return code -- no extra indent found
+        end
+        table.insert(lines, s:sub(first_line_indent, #s))
+      else
+        line_indent = get_indent_lenght(s)
+        if line_indent ~= first_line_indent then
+          return code -- doesn't match the indent, so it is not an indentation
+        end
+        table.insert(lines, s:sub(line_indent, #s))
+      end
+  end
+
+  return table.concat(lines, "\n")
+end
+
 function M:eval_code_block()
 	local linenr_from = fn.search(code_block_start()..".\\+$", "bnW")
 	local linenr_until = fn.search(code_block_end()..".*$", "nW")
@@ -289,8 +362,8 @@ function M:eval_code_block()
         return
     end
 
-    local code = api.nvim_buf_get_lines(0, linenr_from, linenr_until - 1, false)
-    if next(code) == nil then
+    local code = parse_code(linenr_from, linenr_until - 1)
+    if code == '' then
         print("No code found.")
         return
     end
@@ -323,9 +396,8 @@ function M:eval_code_block()
     local temp_filename = generate_temp_filename(api.nvim_buf_get_name(0),
                                                  linenr_from,
                                                  linenr_until)
-    local code_str = table.concat(code, "\n")
     local eval_output, rc = eval_code(lang_name, lang_options,
-                                      temp_filename, code_str,
+                                      temp_filename, code,
                                       M.opts.exec_timeout)
     remove_previous_output(linenr_until + 1)
     write_output(linenr_until, eval_output)
