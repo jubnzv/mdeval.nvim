@@ -286,7 +286,7 @@ end
 
 -- Parses start line to get code of the language.
 -- For example: `#+BEGIN_SRC cpp` returns `cpp`.
-function get_lang(start_line)
+local function get_lang(start_line)
   local start_pos = string.find(start_line, code_block_start())
   local len = string.len(code_block_start())
   return string.sub(start_line, start_pos + len):gsub("%s+", "")
@@ -294,8 +294,8 @@ end
 
 -- Returns indentation length for the string `s`.
 local function get_indent_lenght(s)
-  tab_length = 4
-  indent = 0
+  local tab_length = 4
+  local indent = 0
   for i = 1, #s do
     c = s:sub(i, i)
     if c == " " then
