@@ -287,7 +287,7 @@ end
 -- Parses start line to get code of the language.
 -- For example: `#+BEGIN_SRC cpp` returns `cpp`.
 local function get_lang(start_line)
-  local start_pos = string.find(start_line, code_block_start())
+  local start_pos = string.find(start_line, code_block_start(), 1, true)
   local len = string.len(code_block_start())
   return string.sub(start_line, start_pos + len):gsub("%s+", "")
 end
