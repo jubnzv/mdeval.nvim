@@ -252,6 +252,22 @@ local function remove_previous_output(linenr)
   fn.setpos(".", saved_pos)
 end
 
+-- Deletes existing lines in virtual output
+-- @param bufnr Buffer number
+-- @param ns_id Namespace id
+local function remove_virtual_lines(bufnr, ns_id, line_start, line_end)
+  local existing_marks = vim.api.nvim_buf_get_extmarks(
+    bufnr,
+    ns_id,
+    {line_start, 0},
+    {line_end, 0},
+    {}
+  )
+  for _, v in pairs(existing_marks) do
+    vim.api.nvim_buf_del_extmark(bufnr, ns_id, v[1])
+  end
+end
+
 -- Writes output of the excuted command after the linenr line.
 -- @param out Table containing lines from the output.
 local function write_output(linenr, out)
@@ -278,10 +294,29 @@ local function write_output(linenr, out)
     out_table[#out_table + 1] = ""
   end
 
+  -- TODO: uncomment this block after we get the option to work
+  -- -- Do not use virtual text
+  -- if (M.opts.virtual_text ~= nil) then
+  --   for _, s in pairs(out_table) do
+  --     fn.append(linenr, s)
+  --     linenr = linenr + 1
+  --   end
+  --   return
+  -- end
+
+  -- Use virtual text
+  local bufnr = vim.api.nvim_get_current_buf()
+  local ns_id = vim.api.nvim_create_namespace("mdeval")
+  remove_virtual_lines(bufnr, ns_id, linenr, linenr+1)
+  local virtual_lines = {}
   for _, s in pairs(out_table) do
-    fn.append(linenr, s)
-    linenr = linenr + 1
+    local vline = {{ s, "MdEvalLine" }}
+    table.insert(virtual_lines, vline)
   end
+  vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr, 0, {
+    virt_lines = virtual_lines,
+    virt_lines_above = true,
+  })
 end
 
 -- Parses start line to get code of the language.
@@ -427,7 +462,16 @@ function M:eval_clean_results()
     print("Not inside a code block.")
     return
   end
+
   remove_previous_output(linenr_until + 1)
+
+  -- clean virtual text (block)
+  local bufnr = vim.api.nvim_get_current_buf()
+  local ns_id = vim.api.nvim_create_namespace("mdeval")
+  remove_virtual_lines(bufnr, ns_id, linenr_until, linenr_until+1)
+
+  -- INFO: if it were to delete all virtual text, it would be like:
+  -- delete_existing_lines(bufnr, ns_id, 0, vim.api.nvim_buf_line_count(0))
 end
 
 M.opts = defaults
