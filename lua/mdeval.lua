@@ -289,7 +289,7 @@ end
 local function get_lang(start_line)
   local start_pos = string.find(start_line, code_block_start(), 1, true)
   local len = string.len(code_block_start())
-  return string.sub(start_line, start_pos + len):gsub("%s+", "")
+  return string.sub(start_line, start_pos + len):match("%w+")
 end
 
 -- Returns indentation length for the string `s`.
