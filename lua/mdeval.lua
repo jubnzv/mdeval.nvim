@@ -432,18 +432,19 @@ end
 
 M.opts = defaults
 function M.setup(opts)
-  -- Apply user-defined options with fallback to defaults.
+  if not opts then
+    return
+  end
+
+  -- Apply user-defined options, skipping tables and updating eval_options.
   for k, v in pairs(opts) do
     if type(v) ~= "table" then
       M.opts[k] = v
-    end
-  end
-  for k, v in pairs(opts.eval_options) do
-    if M.opts.eval_options[k] == nil then
-      M.opts.eval_options[k] = {}
-    end
-    for nk, nv in pairs(v) do
-      M.opts.eval_options[k][nk] = nv
+    elseif k == "eval_options" then
+      M.opts.eval_options = M.opts.eval_options or {}
+      for nk, nv in pairs(v) do
+        M.opts.eval_options[nk] = nv
+      end
     end
   end
 end
