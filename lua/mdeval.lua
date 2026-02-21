@@ -216,14 +216,14 @@ local function remove_previous_output(linenr)
   if maybe_results_line == nil then
     return
   end
-  if not maybe_results_line:find(M.opts.results_label) then
+  if not maybe_results_line:find(M.opts.results_label, 1, true) then
     return
   end
   fn.execute(string.format("%d,%ddelete", linenr, results_linenr))
 
   -- Remove multiline code blocks following the results header.
   local cur_line = fn.getline(linenr)
-  if cur_line:find(code_block_start()) then
+  if cur_line:find(code_block_start(), 1, true) then
     end_linenr = linenr
     while true do
       end_linenr = end_linenr + 1
